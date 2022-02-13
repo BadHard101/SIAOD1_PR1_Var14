@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <vector>
 using namespace std;
 
 //Индекс первого вхождения минимального значения среди отрицательных чисел массива
@@ -9,6 +10,22 @@ int func1static(int mas[], int n) {
     {
         if (mas[i] < neg_num) {
             neg_num = mas[i];
+            min_i = i;
+        }
+    }
+    if (min_i != -1)
+        return min_i;
+    else
+        return -1;
+}
+
+int func1vector(vector<int>& vec) {
+    int min_i = -1;
+    int neg_num = 0;
+    for (int i = 0; i < vec.size(); i++)
+    {
+        if (vec[i] < neg_num) {
+            neg_num = vec[i];
             min_i = i;
         }
     }
@@ -43,7 +60,26 @@ int func2static(int mas[], int n, int n_max, int newelem)
 	return 0;
 }
 
-void func3static(int mas[], int& n, int k) //Удалить все элементы массива равные минимальному значению в массиве среди отрицательных чисел
+int func2vector(vector<int>& vec, int newelem) {
+
+    //нахождение индекса минимального элемента массива
+    int min_elem = vec[0];
+    int min_i = 0;
+    for (int i = 1; i < vec.size(); i++)
+    {
+        if (vec[i] < min_elem) {
+            min_elem = vec[i];
+            min_i = i;
+        }
+    }
+
+    vec.insert(vec.begin() + min_i + 1, newelem);
+
+    return 0;
+}
+
+//Удалить все элементы массива равные минимальному значению в массиве среди отрицательных чисел
+void func3static(int mas[], int& n, int k) 
 {
     int p = mas[k];
     for (int i = 0; i < n; i++)
@@ -55,13 +91,29 @@ void func3static(int mas[], int& n, int k) //Удалить все элемен�
         }
 }
 
+void func3vector(vector<int>& vec, int v) {
+    if (v != -1)
+    {
+        int min_znach = vec[v];
+        for (int i = 0; i < vec.size(); i++)
+            if (vec[i] == min_znach) {
+                vec.erase(vec.begin() + i);
+                i--;
+            }
+    }
+    else
+        cout << "Нет отрицательных чисел в массиве. Массив остался таким же: ";
+    
+}
+
 
 
 int main()
 {
     
     setlocale(0, "russian");
-    int menu, n_static, tempint, kolv_min_el;
+    int menu, n_static, tempint, kolv_min_el, n_vector;
+    vector<int> mas_vector;
     int k = 1;
     const int n_static_max = 10;
     do {
@@ -69,6 +121,8 @@ int main()
         cin >> menu;
         switch (menu)
         {
+
+        #pragma region case1
         case 1: //static
             int mas_static[n_static_max];
             cout << "Сколько ввести элементов(не больше 10): ";
@@ -121,11 +175,66 @@ int main()
                     func3static(mas_static, n_static, k);
                     if (k == -1)
                         cout << "Нет отрицательных чисел в массиве. Массив остался таким же: ";
+                    else
+                        cout << "Получившийся массив: ";
                     for (int j = 0; j < n_static; j++) cout << mas_static[j] << " ";
                     cout << endl;
+                    break;
                 }
             } while (menu != 0);
 
+
+
+#pragma endregion
+
+        case 3: //vector
+            cout << "Сколько ввести элементов: ";
+            cin >> n_vector;
+            cout << "Введите " << n_vector << " элементов: ";
+            for (int i = 0; i < n_vector; i++)
+            {
+                cin >> tempint;
+                mas_vector.push_back(tempint);
+            }
+            cout << "Введенный массив: ";
+            for (int j = 0; j < mas_vector.size(); j++) cout << mas_vector[j] << " ";
+            cout << endl;
+
+            do
+            {
+                cout << "1:func1, 2:func2, 3:func3\n";
+                cin >> menu;
+                switch (menu)
+                {
+                case 1: //Найти индекс первого вхождения минимального значения среди отрицательных чисел массива. 
+                    switch (func1vector(mas_vector)) {
+                    case -1:
+                        cout << "В массиве нет отрицательных чисел.\n";
+                        break;
+                    default:
+                        cout << "Индекс минимального отрицательного числа равен: " << func1vector(mas_vector) << endl;
+                        break;
+                    }
+                    break;
+                case 2:
+                    cout << "Новый элемент: ";
+                    cin >> tempint;
+                    func2vector(mas_vector, tempint);
+                    cout << "Массив: ";
+                    for (int j = 0; j < mas_vector.size(); j++) cout << mas_vector[j] << " ";
+                    cout << endl;
+                    break;
+                case 3:
+                    int k = func1vector(mas_vector);
+                    func3vector(mas_vector, k);
+                    if (k != -1)
+                        cout << "Получившийся массив: ";
+                    for (int j = 0; j < mas_vector.size(); j++) cout << mas_vector[j] << " ";
+                    cout << endl;
+                    break;
+                }
+            } while (menu != 0);
+            break;
         }
     } while (menu != 0);
 }
