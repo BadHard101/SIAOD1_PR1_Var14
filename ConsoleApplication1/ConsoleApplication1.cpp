@@ -60,6 +60,28 @@ int func2static(int mas[], int n, int n_max, int newelem)
 	return 0;
 }
 
+int func2dynamic(int*& mas, int& n, int newelem)
+{
+    //нахождение индекса минимального элемента массива
+    int min_elem = mas[0];
+    int min_i = 0;
+    for (int i = 1; i < n; i++)
+    {
+        if (mas[i] < min_elem) {
+            min_elem = mas[i];
+            min_i = i;
+        }
+    }
+    
+    //расширяем область памяти, сдвигаем правую часть массива на 1 элемент и вставляем новый элемент
+    mas = (int*)realloc(mas, (n + 1) * sizeof(int));
+    for (int j = n; j > min_i+1; j--)
+        mas[j] = mas[j - 1];
+    mas[min_i+1] = newelem;
+    n++;
+    return 0;
+}
+
 int func2vector(vector<int>& vec, int newelem) {
 
     //нахождение индекса минимального элемента массива
@@ -91,6 +113,19 @@ void func3static(int mas[], int& n, int k)
         }
 }
 
+void func3dynamic(int*& mas, int& n, int k)
+{
+    int p = mas[k];
+    for (int i = 0; i < n; i++)
+        if (k != -1 && mas[i] == p) {
+            for (int j = i; j < n - 1; j++) //удаление переносом
+                mas[j] = mas[j + 1];
+            i--;
+            n--;
+            mas = (int*)realloc(mas, n * sizeof(int));
+        }
+}
+
 void func3vector(vector<int>& vec, int v) {
     if (v != -1)
     {
@@ -112,12 +147,13 @@ int main()
 {
     
     setlocale(0, "russian");
-    int menu, n_static, tempint, kolv_min_el, n_vector;
+    int menu, n_static, tempint, kolv_min_el, n_vector, n_dynamic;
+    int* mas_dynamic;
     vector<int> mas_vector;
     int k = 1;
     const int n_static_max = 10;
     do {
-        cout << "1:static, 2:dynamic, 3:vector\n";
+        cout << "1: Static, 2: Dynamic, 3: Vector\n";
         cin >> menu;
         switch (menu)
         {
@@ -185,7 +221,58 @@ int main()
 
 
 
-#pragma endregion
+        #pragma endregion
+
+
+        case 2: //dynamic
+            cout << "Сколько ввести элементов: ";
+            n_dynamic = 0;
+            cin >> n_dynamic;
+            mas_dynamic = new int[n_dynamic];
+            cout << "Введите " << n_dynamic << " элементов: ";
+            for (int i = 0; i < n_dynamic; i++) cin >> mas_dynamic[i];
+            cout << "Полученный массив: ";
+            for (int j = 0; j < n_dynamic; j++) cout << mas_dynamic[j] << " ";
+            cout << endl;
+
+            do
+            {
+                cout << "\n1:Нахождение индекса первого вхождения минимального значения среди отрицательных чисел массива;\n2:Вставить новый элемент после первого минимального элемента массива;\n3:Удалить все элементы массива равные минимальному значению в массиве среди отрицательных чисел(если такие есть);\n";
+                cin >> menu;
+                switch (menu)
+                {
+                case 1:
+                    switch (func1static(mas_dynamic, n_dynamic)) {
+                    case -1:
+                        cout << "Нет отрицательного числа.\n";
+                        break;
+                    default:
+                        cout << "Индекс минимального отрицательного числа равен: " << func1static(mas_dynamic, n_dynamic) << endl;
+                        break;
+                    }
+                    break;
+                case 2:
+                    cout << "Новый элемент: ";
+                    cin >> tempint;
+                    func2dynamic(mas_dynamic, n_dynamic, tempint);
+                    cout << "Массив: ";
+                    for (int j = 0; j < n_dynamic; j++) cout << mas_dynamic[j] << " ";
+                    cout << endl;
+                    break;
+                case 3:
+                    int k = func1static(mas_dynamic, n_dynamic);
+                    func3dynamic(mas_dynamic, n_dynamic, k);
+                    if (k == -1)
+                        cout << "Нет отрицательных чисел в массиве. Массив остался таким же: ";
+                    else
+                        cout << "Получившийся массив: ";
+                    for (int j = 0; j < n_dynamic; j++) cout << mas_dynamic[j] << " ";
+                    cout << endl;
+                    break;
+                }
+            } while (menu != 0);
+            break;
+
 
         case 3: //vector
             cout << "Сколько ввести элементов: ";
@@ -202,7 +289,7 @@ int main()
 
             do
             {
-                cout << "1:func1, 2:func2, 3:func3\n";
+                cout << "\n1:Нахождение индекса первого вхождения минимального значения среди отрицательных чисел массива;\n2:Вставить новый элемент после первого минимального элемента массива;\n3:Удалить все элементы массива равные минимальному значению в массиве среди отрицательных чисел(если такие есть);\n";
                 cin >> menu;
                 switch (menu)
                 {
