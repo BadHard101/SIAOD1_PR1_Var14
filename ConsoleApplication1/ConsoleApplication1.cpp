@@ -153,7 +153,7 @@ int main()
     int k = 1;
     const int n_static_max = 10;
     do {
-        cout << "1: Static, 2: Dynamic, 3: Vector\n";
+        cout << "Практическая работа №1\nКузнецов Андрей ИКБО-09-21\nКакой тип массива будем использовать?\n1: Static, 2: Dynamic, 3: Vector\n";
         cin >> menu;
         switch (menu)
         {
